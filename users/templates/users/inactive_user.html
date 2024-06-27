@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-4">
+        <div class="my-3 p-3 bg-body rounded shadow-lg">
+            <h4 class="border-bottom pb-2 mb-0">Your account is banned
+                <svg class="w-6 h-6 text-gray-800 red:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     width="32" height="32" fill="none" viewBox="0 2 24 24">
+                    <path stroke="red" stroke-linecap="round" stroke-width="2"
+                          d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+
+
+            </h4>
+            <div class="mt-2">
+                Please contact the administrator for more information.
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

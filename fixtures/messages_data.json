@@ -1,0 +1,47 @@
+[
+    {
+        "model": "main.message",
+        "pk": 1,
+        "fields": {
+            "subject": "Company Updates: New Projects and Achievements!",
+            "body": "Dear Colleagues,\n\nWe are excited to share our latest achievements! Over the past month, we successfully completed the \"Orion\" project and have started working on a new project called \"Sirius.\" Thanks to your efforts, our company continues to grow and thrive.\n\nThank you for your dedication and contribution.\n\nBest regards, Management Team",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.message",
+        "pk": 2,
+        "fields": {
+            "subject": "Special Offer: 20% Discount on All Products!",
+            "body": "Hello,\n\nUntil the end of the month, we have a unique 20% discount on our entire range! Don't miss the chance to update your wardrobe or purchase long-awaited products at great prices.\n\nVisit our website and use the promo code SALE20 at checkout.\n\nBest wishes, Your Company",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.message",
+        "pk": 3,
+        "fields": {
+            "subject": "5 Tips for Effective Time Management",
+            "body": "Greetings,\n\nTime management is key to success in any field. Today we want to share five useful tips that will help you become more productive:\n\n1. Plan your day in advance.\n2. Set priorities.\n3. Avoid multitasking.\n4. Take breaks.\n5. Use technology to optimize work.\n\nWe hope these tips will be helpful to you!\n\nBest regards, Your Team",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.message",
+        "pk": 4,
+        "fields": {
+            "subject": "Share Your Opinion: Satisfaction Survey",
+            "body": "Hello,\n\nWe strive to constantly improve our services and products, and your opinion plays a key role in this process. We kindly ask you to take a few minutes to complete a short survey about your experience with our company.\n\nYour feedback will help us become better and meet your expectations.\n\nThank you for your time and participation!\n\nBest regards, Your Company",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.message",
+        "pk": 5,
+        "fields": {
+            "subject": "Upcoming Webinar: Enhance Your Skills!",
+            "body": "Dear Subscribers,\n\nWe are pleased to invite you to our upcoming webinar on skill enhancement. Join us on July 15th for an in-depth session with industry experts.\n\nReserve your spot today and take the next step in your professional development!\n\nBest regards, The Webinar Team",
+            "owner": "3"
+        }
+    }
+]

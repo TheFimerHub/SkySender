@@ -1,0 +1,288 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load mediapath_tag %}
+
+{% block content %}
+
+<style>
+    .like-button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .like-button svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .liked .unliked-icon {
+        display: none;
+    }
+
+    .liked .liked-icon {
+        display: inline;
+    }
+
+    .unliked .unliked-icon {
+        display: inline;
+    }
+
+    .unliked .liked-icon {
+        display: none;
+    }
+
+    .blog-container {
+        margin-bottom: 20px;
+    }
+
+
+    .pagination .page-link {
+        color: black;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: black;
+        border-color: black;
+        color: white;
+    }
+
+    .pagination .page-link:hover {
+        color: black;
+    }
+
+    .stat-card {
+        border: 1px solid #e7e7e7; /* Добавляем обводку */
+        text-align: center;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s; /* Плавный переход для эффекта */
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px); /* Эффект поднятия при наведении */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень при наведении */
+    }
+
+
+    .stat-card h5 {
+        color: #5e656c;
+        font-size: 1.2rem;
+    }
+
+    .large-text {
+        color: #000000;
+        font-size: 6rem;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .header-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .large-text:hover {
+        color: #ffb800;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .blog_card {
+        border: 1px solid #e7e7e7; /* Добавляем обводку */
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s; /* Плавный переход для эффекта */
+    }
+
+    .blog-content {
+        margin-bottom: 5px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 5px;
+    }
+
+    .blog_image {
+        width: 100%;
+        padding-top: 57%; /* Aspect ratio 1:1 (square) */
+        position: relative;
+        overflow: hidden;
+        padding-left: 10px; /* Отступ слева */
+        padding-right: 10px; /* Отступ справа */
+        box-sizing: border-box; /* Учитываем отступы в размере элемента */
+    }
+
+    .blog_image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 20px); /* Учитываем отступы */
+        height: 100%;
+        object-fit: cover;
+        margin-left: 10px; /* Смещаем изображение влево */
+    }
+
+
+</style>
+<div class="container col-xxl-9 px-lg-0 pb-5">
+    <div class="container">
+        <div class="row rounded-4 shadow-lg flex-lg-row-reverse align-items-center p-2 my-md-5">
+            <div class="header-row pt-3">
+                <h2 class="text-center text-black">Your personal information</h2>
+                <svg class="w-[38px] h-[38px] text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="-3 1 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
+                </svg>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <a href="{% url 'creator-page' %}" class="large-text">{{ info.all_clients }}</a> <br>
+                    <h5><a href="{% url 'creator-page' %}" style="text-decoration: none; color: #5e656c;">Unique clients</a></h5>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <a href="{% url 'creator-page' %}" class="large-text">{{ info.all_mailings }}</a> <br>
+                    <h5><a href="{% url 'creator-page' %}" style="text-decoration: none; color: #5e656c;">Total mailings</a></h5>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <a href="{% url 'creator-page' %}" class="large-text">{{ info.active_mailings }}</a> <br>
+                    <h5><a href="{% url 'creator-page' %}" style="text-decoration: none; color: #5e656c;">Active mailings</a></h5>
+                </div>
+            </div>
+        </div>
+        <div class="row rounded-4 shadow-lg flex-lg-row-reverse align-items-center p-5 my-md-5">
+            <div class="col-10 col-sm-8 col-lg-6">
+                <img src="{% mediapath 'images/general.svg' %}" class="d-block mx-lg-auto img-fluid"
+                     alt="Bootstrap Themes"
+                     width="1000" height="auto" loading="lazy">
+            </div>
+            <div class="col-lg-6 mt-0">
+                <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Creating a mailings is easier than
+                    anything</h1>
+                <p class="lead">With just a few clicks of a button, you can send out a mailings that will reach
+                    thousands
+                    of your customers. Our service makes it easy and quick to create and send personalized messages,
+                    increasing your engagement and conversion.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{% url 'creator-page' %}" type="button" class="btn btn-dark btn-lg px-4 me-md-2">Create</a>
+                    <a href="{% url 'blog-list' %}" type="button" class="btn btn-outline-secondary btn-lg px-4">Check
+                        blog</a>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-3 pb-2 bg-body rounded-4 shadow-lg p-0">
+            <div class="header-row pt-3">
+                <h2 class="text-center text-black">Our site blog</h2>
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     width="30" height="30" fill="none" viewBox="-2 1 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 9H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h6m0-6v6m0-6 5.419-3.87A1 1 0 0 1 18 5.942v12.114a1 1 0 0 1-1.581.814L11 15m7 0a3 3 0 0 0 0-6M6 15h3v5H6v-5Z"/>
+                </svg>
+            </div>
+            {% for blog in blogs %}
+            <div class="col-4 mb-2 blog-container">
+                <div class="blog_card pt-3 pb-2 bg-body rounded-4 p-0">
+                    <div class="row pb-3 px-3">
+                        <div class="col-auto">
+                            <img src="{% mediapath 'icons/blog_logo.png' %}" alt="Blog logo" class="rounded-circle"
+                                 style="width: 50px; height: 50px;">
+                        </div>
+                        <div class="col p-0">
+                            <div class="row">
+                                <div class="col-auto" style="padding-right: 0px">
+                                    <h6 class="my-1 mb-0">SkySender</h6>
+                                    <span style="font-size: 15px"
+                                          class="d-block text-secondary">{{ blog.time_since }}</span>
+                                </div>
+                                <div class="col p-0">
+                                    <svg class="w-[14px] h-[14px] text-gray-800 dark:text-white" aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd"
+                                              d="M12 2c-.791 0-1.55.314-2.11.874l-.893.893a.985.985 0 0 1-.696.288H7.04A2.984 2.984 0 0 0 4.055 7.04v1.262a.986.986 0 0 1-.288.696l-.893.893a2.984 2.984 0 0 0 0 4.22l.893.893a.985.985 0 0 1 .288.696v1.262a2.984 2.984 0 0 0 2.984 2.984h1.262c.261 0 .512.104.696.288l.893.893a2.984 2.984 0 0 0 4.22 0l.893-.893a.985.985 0 0 1 .696-.288h1.262a2.984 2.984 0 0 0 2.984-2.984V15.7c0-.261.104-.512.288-.696l.893-.893a2.984 2.984 0 0 0 0-4.22l-.893-.893a.985.985 0 0 1-.288-.696V7.04a2.984 2.984 0 0 0-2.984-2.984h-1.262a.985.985 0 0 1-.696-.288l-.893-.893A2.984 2.984 0 0 0 12 2Zm3.683 7.73a1 1 0 1 0-1.414-1.413l-4.253 4.253-1.277-1.277a1 1 0 0 0-1.415 1.414l1.985 1.984a1 1 0 0 0 1.414 0l4.96-4.96Z"
+                                              clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-info border-top">
+                        <!-- Название -->
+                        <h5 class="px-3 pt-3 d-block text-black">
+                            <a href="{% url 'blog-detail' blog.pk %}" style="color: inherit; text-decoration: none;">
+                                {{ blog.title }}
+                            </a>
+                        </h5>
+                        <!-- Описание -->
+                        <p href="{% url 'blog-detail' blog.pk %}" class="px-3 blog-content">
+                            {{ blog.content|truncatechars:150 }}</p>
+                        <!-- Картинка -->
+                        <div class="blog_image px-2 pb-3">
+                            {% if blog.image %}
+                            <img class="card-img-top border rounded-4" src="{{ blog.image.url }}" alt="blog Image">
+                            {% else %}
+                            <img src="{% static 'media/blog/default_blog_image.jpg' %}" alt="Default Image">
+                            {% endif %}
+                        </div>
+                        <!-- Доп. информация -->
+                        <div class="px-3 mt-1 border-top blog-actions text-secondary">
+                            <div class="row mt-2">
+                                <div class="col" style="display: block; text-align: left;">
+                                    <button class="like-button unliked">
+                                        <svg class="unliked-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                             fill="none" viewBox="0 2 24 24">
+                                            <path stroke="#6c757d" stroke-linecap="round" stroke-linejoin="round"
+                                                  stroke-width="2"
+                                                  d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"/>
+                                        </svg>
+                                        <svg class="liked-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                             fill="#6c757d" viewBox="0 2 24 24">
+                                            <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="col" style="display: block; text-align: right;">
+                                    <svg class="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                                         aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg" width="18"
+                                         height="18" fill="currentColor"
+                                         viewBox="0 2 24 24">
+                                        <path fill-rule="evenodd"
+                                              d="M4.998 7.78C6.729 6.345 9.198 5 12 5c2.802 0 5.27 1.345 7.002 2.78a12.713 12.713 0 0 1 2.096 2.183c.253.344.465.682.618.997.14.286.284.658.284 1.04s-.145.754-.284 1.04a6.6 6.6 0 0 1-.618.997 12.712 12.712 0 0 1-2.096 2.183C17.271 17.655 14.802 19 12 19c-2.802 0-5.27-1.345-7.002-2.78a12.712 12.712 0 0 1-2.096-2.183 6.6 6.6 0 0 1-.618-.997C2.144 12.754 2 12.382 2 12s.145-.754.284-1.04c.153-.315.365-.653.618-.997A12.714 12.714 0 0 1 4.998 7.78ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                                              clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ blog.views }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="col-12 d-flex mb-3 justify-content-center">
+                <a href="{% url 'blog-list' %}" type="button" class="col-3 btn btn-outline-dark btn-lg">View our posts
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M3 4a1 1 0 0 0-.822 1.57L6.632 12l-4.454 6.43A1 1 0 0 0 3 20h13.153a1 1 0 0 0 .822-.43l4.847-7a1 1 0 0 0 0-1.14l-4.847-7a1 1 0 0 0-.822-.43H3Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

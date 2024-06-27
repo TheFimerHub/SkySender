@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <div class="my-3 p-3 bg-body rounded shadow-lg">
+            <h4 class="border-bottom pb-2 mb-0">{{ view.title }}
+                <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 2 24 24">
+                    <path d="M17 6h-2V5h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2h-.541A5.965 5.965 0 0 1 14 10v4a1 1 0 1 1-2 0v-4c0-2.206-1.794-4-4-4-.075 0-.148.012-.22.028C7.686 6.022 7.596 6 7.5 6A4.505 4.505 0 0 0 3 10.5V16a1 1 0 0 0 1 1h7v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3h5a1 1 0 0 0 1-1v-6c0-2.206-1.794-4-4-4Zm-9 8.5H7a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2Z"/>
+                </svg>
+            </h4>
+            <div class="d-lg-flex text-body-secondary justify-content-center pt-3">
+                <form method="post" class="w-100">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-dark me-2">Save</button>
+                        <a href="/creator/" class="btn btn-outline-dark">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

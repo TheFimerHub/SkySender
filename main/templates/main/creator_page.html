@@ -1,0 +1,583 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% load mediapath_tag %}
+
+{% if user_is_manager %}
+<div class="container">
+    <div class="text-center">
+        <div class="header-container">
+            <h1 class="mb-4" style="color: #4c60af;">Mailings Manager</h1>
+            <a href="{% url 'creator-page' %}" class="btn btn-dark refresh-button">
+                Refresh
+                <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 1 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Your mailings
+                    <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path d="M17 6h-2V5h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2h-.541A5.965 5.965 0 0 1 14 10v4a1 1 0 1 1-2 0v-4c0-2.206-1.794-4-4-4-.075 0-.148.012-.22.028C7.686 6.022 7.596 6 7.5 6A4.505 4.505 0 0 0 3 10.5V16a1 1 0 0 0 1 1h7v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3h5a1 1 0 0 0 1-1v-6c0-2.206-1.794-4-4-4Zm-9 8.5H7a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2Z"/>
+                    </svg>
+                </h5>
+                {% for mailing in mailings %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#e83e8c"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M17 6h-2V5h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2h-.541A5.965 5.965 0 0 1 14 10v4a1 1 0 1 1-2 0v-4c0-2.206-1.794-4-4-4-.075 0-.148.012-.22.028C7.686 6.022 7.596 6 7.5 6A4.505 4.505 0 0 0 3 10.5V16a1 1 0 0 0 1 1h7v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3h5a1 1 0 0 0 1-1v-6c0-2.206-1.794-4-4-4Zm-9 8.5H7a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2Z"/>
+                    </svg>
+
+                    <div class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Mailing: {{ mailing.message|truncatechars:30 }}</strong>
+                        Message: {{ mailing.message.body|truncatechars:30 }}
+                        <br>
+                        <div style="color: black">
+                            <b>{{ mailing.owner }}</b>
+                            <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                 viewBox="5 2 24 24">
+                                <path fill-rule="evenodd"
+                                      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center ms-auto">
+                        <span style="margin-left: 5px; margin-top: -5px;">
+                            {% if mailing.status == 'created, waiting to be sent' %}
+                            <span class="badge bg-warning text-dark">{{ mailing.status }}</span>
+                            {% elif mailing.status == 'sent, waiting for the next one' %}
+                            <span class="badge bg-success">{{ mailing.status }}</span>
+                            {% elif mailing.status == 'finished, failed to send' %}
+                            <span class="badge bg-danger">{{ mailing.status }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ mailing.status }}</span>
+                            {% endif %}
+                        </span>
+                        <br>
+                        {% if user_is_manager and mailing.status != mailing.FINISHED %}
+                        <form method="post" action="{% url 'disable-mailing' mailing.id %}">
+                            {% csrf_token %}
+                            <div style="margin-left: 5px; margin-top: 0px;" class="d-flex align-items-center ms-3">
+                                <button type="submit" class="btn btn-sm btn-danger">Disable</button>
+                            </div>
+                        </form>
+                        {% elif user_is_manager and mailing.status == mailing.FINISHED %}
+                        <form method="post" action="{% url 'allow-mailing' mailing.id %}">
+                            {% csrf_token %}
+                            <div style="margin-left: 5px; margin-top: 0px;" class="d-flex align-items-center ms-3">
+                                <button type="submit" class="btn btn-sm btn-success">Allow</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Users
+                    <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path fill-rule="evenodd"
+                              d="M7 2a2 2 0 0 0-2 2v1a1 1 0 0 0 0 2v1a1 1 0 0 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7Zm3 8a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm-1 7a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3 1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </h5>
+                {% for user in users %}
+                <div class="d-flex justify-content-between align-items-center text-body-secondary pt-3">
+                    <div class="d-flex align-items-center">
+                        <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                             xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                             viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                            <title>Placeholder</title>
+                            <rect width="32" height="32" fill="#6f42c1"/>
+                            <path fill="white" transform="translate(4, 4)"
+                                  d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                  clip-rule="evenodd"/>
+                        </svg>
+
+                        <p class="pb-3 mb-0 small lh-sm border-bottom">
+                            <strong class="d-block text-gray-dark">{{ user.email|truncatechars:50 }}</strong>
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Banned</span>
+                            {% endif %}
+
+                            {% if user.is_staff %}
+                            <span class="badge bg-primary">Staff</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        {% if user_is_manager %}
+                        {% if user.is_active and not user.is_staff %}
+                        <form method="post" action="{% url 'block-user' user.id %}" class="ms-auto">
+                            {% csrf_token %}
+                            <div style="margin-left: 5px; margin-top: 0px;" class="d-flex align-items-center ms-3">
+                                <button type="submit" class="btn btn-sm btn-danger">Block</button>
+                            </div>
+                        </form>
+                        {% elif user.is_staff %}
+                        <button class="btn btn-sm btn-secondary ms-auto" disabled>Block</button>
+                        {% else %}
+                        <form method="post" action="{% url 'unblock-user' user.id %}" class="ms-auto">
+                            {% csrf_token %}
+                            <div style="margin-left: 5px; margin-top: 0px;" class="d-flex align-items-center ms-3">
+                                <button type="submit" class="btn btn-sm btn-success">Unblock</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-4">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Clients
+                    <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path fill-rule="evenodd"
+                              d="M7 2a2 2 0 0 0-2 2v1a1 1 0 0 0 0 2v1a1 1 0 0 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7Zm3 8a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm-1 7a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3 1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </h5>
+                {% for client in clients %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#6f42c1"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    </svg>
+
+                    <div class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">{{ client.name|truncatechars:50 }}</strong>
+                        {{ client.email|truncatechars:30 }}
+                        <br>
+                        <div style="color: black">
+                            <b>{{ client.owner }}</b>
+                            <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                 viewBox="5 2 24 24">
+                                <path fill-rule="evenodd"
+                                      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Messages
+                    <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path fill-rule="evenodd"
+                              d="M3.559 4.544c.355-.35.834-.544 1.33-.544H19.11c.496 0 .975.194 1.33.544.356.35.559.829.559 1.331v9.25c0 .502-.203.981-.559 1.331-.355.35-.834.544-1.33.544H15.5l-2.7 3.6a1 1 0 0 1-1.6 0L8.5 17H4.889c-.496 0-.975-.194-1.33-.544A1.868 1.868 0 0 1 3 15.125v-9.25c0-.502.203-.981.559-1.331ZM7.556 7.5a1 1 0 1 0 0 2h8a1 1 0 0 0 0-2h-8Zm0 3.5a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2H7.556Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </h5>
+                {% for message in messages %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#007bff"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M3.559 4.544c.355-.35.834-.544 1.33-.544H19.11c.496 0 .975.194 1.33.544.356.35.559.829.559 1.331v9.25c0 .502-.203.981-.559 1.331-.355.35-.834.544-1.33.544H15.5l-2.7 3.6a1 1 0 0 1-1.6 0L8.5 17H4.889c-.496 0-.975-.194-1.33-.544A1.868 1.868 0 0 1 3 15.125v-9.25c0-.502.203-.981.559-1.331ZM7.556 7.5a1 1 0 1 0 0 2h8a1 1 0 0 0 0-2h-8Zm0 3.5a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2H7.556Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+
+
+                    <div class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">{{ message.subject|truncatechars:30 }}</strong>
+                        {{ message.body|truncatechars:30 }}
+                        <br>
+                        <div style="color: black">
+                            <b>{{ message.owner }}</b>
+                            <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                 viewBox="5 2 24 24">
+                                <path fill-rule="evenodd"
+                                      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Mailing Attempts
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path d="M17.133 12.632v-1.8a5.407 5.407 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.933.933 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175Zm-13.267-.8a1 1 0 0 1-1-1 9.424 9.424 0 0 1 2.517-6.391A1.001 1.001 0 1 1 6.854 5.8a7.43 7.43 0 0 0-1.988 5.037 1 1 0 0 1-1 .995Zm16.268 0a1 1 0 0 1-1-1A7.431 7.431 0 0 0 17.146 5.8a1 1 0 0 1 1.471-1.354 9.424 9.424 0 0 1 2.517 6.391 1 1 0 0 1-1 .995ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z"/>
+                    </svg>
+
+                </h5>
+                {% for attempt in attempts %}
+                <div class="d-flex text-body-secondary pt-3">
+                    {% if attempt.status == True %}
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#1a8754"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <div class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Attempt for:
+                            {{ attempt.mailing.message.subject|truncatechars:50 }}</strong>
+                        {{ attempt.attempt_time }}
+                        <br>
+                        Status:
+                        <span class="badge bg-success">Message sent</span>
+                        <div style="color: black">
+                            <b>{{ attempt.owner }}</b>
+                            <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                 viewBox="5 2 24 24">
+                                <path fill-rule="evenodd"
+                                      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    {% elif attempt.status == False %}
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#dc3545"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <div class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Attempt for:
+                            {{ attempt.mailing.message.subject|truncatechars:50 }}</strong>
+                        {{ attempt.attempt_time }}
+                        <br>
+                        Status:
+                        <span class="badge bg-danger">Error occurred</span>
+                        <br>
+                        Error message:
+                        {{ attempt.server_response }}
+                        {% else %}
+                        <span class="badge bg-secondary">{{ attempt.status }}</span>
+                        <div style="color: black">
+                            <b>{{ attempt.owner }}</b>
+                            <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                 viewBox="5 2 24 24">
+                                <path fill-rule="evenodd"
+                                      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <br>
+                    {% endif %}
+
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="container">
+    <div class="text-center">
+        <div class="header-container">
+            <h1 class="mb-4">Mailings creator</h1>
+            <a href="{% url 'creator-page' %}" class="btn btn-dark refresh-button">
+                Refresh
+                <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 1 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Your mailings
+                    <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path d="M17 6h-2V5h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2h-.541A5.965 5.965 0 0 1 14 10v4a1 1 0 1 1-2 0v-4c0-2.206-1.794-4-4-4-.075 0-.148.012-.22.028C7.686 6.022 7.596 6 7.5 6A4.505 4.505 0 0 0 3 10.5V16a1 1 0 0 0 1 1h7v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3h5a1 1 0 0 0 1-1v-6c0-2.206-1.794-4-4-4Zm-9 8.5H7a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2Z"/>
+                    </svg>
+                </h5>
+                {% for mailing in mailings %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#e83e8c"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M17 6h-2V5h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2h-.541A5.965 5.965 0 0 1 14 10v4a1 1 0 1 1-2 0v-4c0-2.206-1.794-4-4-4-.075 0-.148.012-.22.028C7.686 6.022 7.596 6 7.5 6A4.505 4.505 0 0 0 3 10.5V16a1 1 0 0 0 1 1h7v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3h5a1 1 0 0 0 1-1v-6c0-2.206-1.794-4-4-4Zm-9 8.5H7a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2Z"/>
+                    </svg>
+
+                    <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Mailing: {{ mailing.message|truncatechars:30
+                            }}</strong>
+                        Message: {{ mailing.message.body|truncatechars:30 }}
+                    </p>
+                    <div class="d-flex align-items-center ms-auto">
+                        <span style="margin-left: 5px; margin-top: -5px;">
+                            {% if mailing.status == 'created, waiting to be sent' %}
+                            <span class="badge bg-warning text-dark">{{ mailing.status }}</span>
+                            {% elif mailing.status == 'sent, waiting for the next one' %}
+                            <span class="badge bg-success">{{ mailing.status }}</span>
+                            {% elif mailing.status == 'finished, failed to send' %}
+                            <span class="badge bg-danger">{{ mailing.status }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ mailing.status }}</span>
+                            {% endif %}
+                        </span>
+                        <div class="ms-3" style="margin-left: 5px; margin-top: -5px;">
+                            <a href="{% url 'mailing-detail' mailing.pk %}" class="btn btn-sm btn-primary">View</a>
+                            <a href="{% url 'mailing-update' mailing.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'mailing-delete' mailing.pk %}"
+                               class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <br>
+                <div class="text-center">
+                    <a href="{% url 'mailing-create' %}" class="btn btn-outline-dark">
+                        Create
+                        <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                             viewBox="0 1 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M5 12h14m-7 7V5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Messages
+                    <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path fill-rule="evenodd"
+                              d="M3.559 4.544c.355-.35.834-.544 1.33-.544H19.11c.496 0 .975.194 1.33.544.356.35.559.829.559 1.331v9.25c0 .502-.203.981-.559 1.331-.355.35-.834.544-1.33.544H15.5l-2.7 3.6a1 1 0 0 1-1.6 0L8.5 17H4.889c-.496 0-.975-.194-1.33-.544A1.868 1.868 0 0 1 3 15.125v-9.25c0-.502.203-.981.559-1.331ZM7.556 7.5a1 1 0 1 0 0 2h8a1 1 0 0 0 0-2h-8Zm0 3.5a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2H7.556Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </h5>
+                {% for message in messages %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#007bff"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M3.559 4.544c.355-.35.834-.544 1.33-.544H19.11c.496 0 .975.194 1.33.544.356.35.559.829.559 1.331v9.25c0 .502-.203.981-.559 1.331-.355.35-.834.544-1.33.544H15.5l-2.7 3.6a1 1 0 0 1-1.6 0L8.5 17H4.889c-.496 0-.975-.194-1.33-.544A1.868 1.868 0 0 1 3 15.125v-9.25c0-.502.203-.981.559-1.331ZM7.556 7.5a1 1 0 1 0 0 2h8a1 1 0 0 0 0-2h-8Zm0 3.5a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2H7.556Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+
+
+                    <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">{{ message.subject|truncatechars:30 }}</strong>
+                        {{ message.body|truncatechars:30 }}
+                    </p>
+                    <div class="d-flex align-items-center ms-auto">
+                        <div class="ms-3" style="margin-left: 5px; margin-top: -10px;">
+                            <a href="{% url 'message-detail' message.pk %} " class="btn btn-sm btn-primary">View</a>
+                            <a href="{% url 'message-update' message.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'message-delete' message.pk %}"
+                               class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <br>
+                <div class="text-center">
+                    <a href="{% url 'message-create' %}" class="btn btn-outline-dark">
+                        Create
+                        <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                             viewBox="0 1 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M5 12h14m-7 7V5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 justify-content-center">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Clients
+                    <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path fill-rule="evenodd"
+                              d="M7 2a2 2 0 0 0-2 2v1a1 1 0 0 0 0 2v1a1 1 0 0 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7Zm3 8a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm-1 7a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3 1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </h5>
+                {% for client in clients %}
+                <div class="d-flex text-body-secondary pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#6f42c1"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    </svg>
+
+                    <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">{{ client.name|truncatechars:50 }}</strong>
+                        {{ client.email|truncatechars:30 }}
+                    </p>
+                    <div class="d-flex align-items-center ms-auto">
+                        <div class="ms-3" style="margin-left: 5px; margin-top: -10px;">
+                            <a href="{% url 'client-detail' client.pk %}" class="btn btn-sm btn-primary">View</a>
+                            <a href="{% url 'client-update' client.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'client-delete' client.pk %}"
+                               class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <br>
+                <div class="text-center">
+                    <a href="{% url 'client-create' %}" class="btn btn-outline-dark">
+                        Create
+                        <svg class="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                             viewBox="0 1 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M5 12h14m-7 7V5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if attempts %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="my-3 p-3 bg-body rounded-4 shadow-lg">
+                <h5 class="border-bottom pb-2 mb-0">Mailing Attempts
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 2 24 24">
+                        <path d="M17.133 12.632v-1.8a5.407 5.407 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.933.933 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175Zm-13.267-.8a1 1 0 0 1-1-1 9.424 9.424 0 0 1 2.517-6.391A1.001 1.001 0 1 1 6.854 5.8a7.43 7.43 0 0 0-1.988 5.037 1 1 0 0 1-1 .995Zm16.268 0a1 1 0 0 1-1-1A7.431 7.431 0 0 0 17.146 5.8a1 1 0 0 1 1.471-1.354 9.424 9.424 0 0 1 2.517 6.391 1 1 0 0 1-1 .995ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z"/>
+                    </svg>
+
+                </h5>
+                {% for attempt in attempts %}
+                <div class="d-flex text-body-secondary pt-3">
+                    {% if attempt.status == True %}
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#1a8754"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Attempt for:
+                            {{ attempt.mailing.message.subject|truncatechars:50 }}</strong>
+                        {{ attempt.attempt_time }}
+                        <br>
+                        Status:
+                        <span class="badge bg-success">Message sent</span>
+                        <br>
+                    </p>
+                    {% elif attempt.status == False %}
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+                         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+                         viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="32" height="32" fill="#dc3545"/>
+                        <path fill="white" transform="translate(4, 4)"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <p class="pb-3 mb-0 small lh-sm border-bottom">
+                        <strong class="d-block text-gray-dark">Attempt for:
+                            {{ attempt.mailing.message.subject|truncatechars:50 }}</strong>
+                        {{ attempt.attempt_time }}
+                        <br>
+                        Status:
+                        <span class="badge bg-danger">Error occurred</span>
+                        <br>
+                        Error message:
+                        {{ attempt.server_response }}
+                        {% else %}
+                        <span class="badge bg-secondary">{{ attempt.status }}</span>
+                    </p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+[
+  {
+    "model": "main.mailing",
+    "pk": 10,
+    "fields": {
+      "start_time": "2024-07-01T11:00:00Z",
+      "periodicity": "daily",
+      "status": "created, waiting to be sent",
+      "message": 5,
+      "owner": 3,
+      "clients": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "model": "main.mailing",
+    "pk": 11,
+    "fields": {
+      "start_time": "2024-07-02T11:00:00Z",
+      "periodicity": "weekly",
+      "status": "created, waiting to be sent",
+      "message": 3,
+      "owner": 3,
+      "clients": [
+        1,
+        2
+      ]
+    }
+  }
+]

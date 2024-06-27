@@ -1,0 +1,52 @@
+[
+    {
+        "model": "main.client",
+        "pk": 1,
+        "fields": {
+            "email": "joe.biden@gmail.com",
+            "name": "Joe Biden",
+            "comment": "Prisedent from the USA.",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.client",
+        "pk": 2,
+        "fields": {
+            "email": "ronaldo@gmail.com",
+            "name": "Cristiano Ronaldo",
+            "comment": "Football player from Portugal.",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.client",
+        "pk": 3,
+        "fields": {
+            "email": "vladimir.putin@mail.ru",
+            "name": "Vladimir Putin",
+            "comment": "Who?",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.client",
+        "pk": 4,
+        "fields": {
+            "email": "ryan.gosling@drive.com",
+            "name": "Ryan Gosling",
+            "comment": "D R I V E",
+            "owner": "3"
+        }
+    },
+    {
+        "model": "main.client",
+        "pk": 5,
+        "fields": {
+            "email": "fimerfan@gmail.com",
+            "name": "Michael Stepanov",
+            "comment": "Student",
+            "owner": "3"
+        }
+    }
+]

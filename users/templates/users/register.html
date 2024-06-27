@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-4">
+        <div class="my-3 p-3 bg-body rounded shadow-lg">
+            <h4 class="border-bottom pb-2 mb-0">Create your account
+                <svg class="w-[20px] h-[20px] text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 2 24 24">
+                    <path fill-rule="evenodd"
+                          d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z"
+                          clip-rule="evenodd"/>
+                </svg>
+            </h4>
+            <form method="post" class="pt-3">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <br>
+                <button type="submit" class="btn btn-dark justify-content-center">Save</button>
+                <a href="{% url 'general-page' %}" class="btn btn-outline-dark">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
